@@ -1,0 +1,136 @@
+:root {
+  --font: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-size: 16px;
+  --side-pad: 25px; /* distance of Rachel / Goh from the screen edges */
+  --text: #100E0E;
+  --bg: #FEFEFE;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: var(--font);
+  font-size: var(--font-size);
+  -webkit-font-smoothing: antialiased;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Opening ---------- */
+
+.opening {
+  position: relative;
+  height: 100vh;
+  height: 100svh; /* avoids the mobile address-bar jump */
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Rows are full-screen flex layers, so text is always vertically centred
+   without transforms (the JS uses transform/translate for the motion). */
+.center-row,
+.side-row {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.center-row {
+  justify-content: center;
+}
+
+.side-row {
+  justify-content: space-between;
+  padding: 0 var(--side-pad);
+}
+
+.name {
+  white-space: pre;
+  line-height: 1;
+}
+
+/* Side names wait for the hand-off from the centre */
+.js #name-left,
+.js #name-right {
+  visibility: hidden;
+}
+
+/* ---------- Tiles ---------- */
+
+/* JS sets left/top/width/height on every frame */
+.mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+}
+
+.tile {
+  width: 100%;
+  height: 100%;
+  background: var(--tile-bg, #eee);
+}
+
+.js .tile {
+  visibility: hidden; /* revealed by the slide-up */
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Without JS: show the tiles as a simple centred row */
+html:not(.js) .center-row {
+  display: none;
+}
+
+html:not(.js) .mask {
+  position: static;
+  width: 22vw;
+  aspect-ratio: 326 / 183;
+}
+
+html:not(.js) .scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5vw;
+}
+
+/* ---------- After the reveal ---------- */
+
+.after {
+  min-height: 100vh;
+  padding: var(--side-pad);
+}

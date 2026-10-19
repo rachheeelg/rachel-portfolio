@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rachel Goh</title>
+    <meta name="description" content="Rachel Goh — graphic designer working across brand identity, type design, motion and web." />
+
+    <!-- Marks the page as JS-enabled before anything paints -->
+    <script>document.documentElement.classList.add("js")</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="home.css" />
+    <script src="home.js" defer></script>
+  </head>
+
+  <body>
+    <section class="opening" aria-label="Introduction">
+      <!-- Real heading for screen readers; the animated text below is decorative -->
+      <h1 class="visually-hidden">Rachel Goh</h1>
+
+      <div class="scene" id="scene">
+        <div class="center-row" aria-hidden="true">
+          <span class="name" id="name-center">Rachel Goh</span>
+        </div>
+
+        <div class="side-row" aria-hidden="true">
+          <span class="name" id="name-left">Rachel</span>
+          <span class="name" id="name-right">Goh</span>
+        </div>
+        <div class="mask">
+          <div class="tile" style="--tile-bg: #000">
+            <img src="home-assets/everything-typeface.jpg" alt="type specimen" />
+          </div>
+        </div>
+        <div class="mask">
+          <div class="tile" style="--tile-bg: #2c4a75">
+            <img src="home-assets/island-records.jpg" alt="Island — identity design" />
+          </div>
+        </div>
+        <div class="mask">
+          <div class="tile" style="--tile-bg: #e9e9e9">
+            <img src="home-assets/femmenet.jpg" alt="Femme*Net — printed card" />
+          </div>
+        </div>
+        <div class="mask">
+          <div class="tile" style="--tile-bg: #000">
+            <img src="home-assets/DFF-Web-Version.png" alt="Dear Future Designer — book cover" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
