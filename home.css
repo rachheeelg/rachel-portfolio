@@ -2,8 +2,8 @@
   --font: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-size: 16px;
   --side-pad: 25px; /* distance of Rachel / Goh from the screen edges */
-  --text: #100E0E;
-  --bg: #FEFEFE;
+  --text: #111;
+  --bg: #fff;
 }
 
 *,
@@ -37,27 +37,31 @@ body {
   border: 0;
 }
 
-/* ---------- Opening ---------- */
+/* ---------- Track + sticky scene ---------- */
 
-.opening {
+/* JS sets the track's height once the grid is live (= scroll distance) */
+.track {
   position: relative;
   height: 100vh;
-  height: 100svh; /* avoids the mobile address-bar jump */
+  height: 100svh;
 }
 
 .scene {
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
 }
 
-/* Rows are full-screen flex layers, so text is always vertically centred
-   without transforms (the JS uses transform/translate for the motion). */
+/* ---------- Opener ---------- */
+
 .center-row,
 .side-row {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   pointer-events: none;
@@ -77,19 +81,16 @@ body {
   line-height: 1;
 }
 
-/* Side names wait for the hand-off from the centre */
 .js #name-left,
 .js #name-right {
   visibility: hidden;
 }
 
-/* ---------- Tiles ---------- */
-
-/* JS sets left/top/width/height on every frame */
 .mask {
   position: absolute;
   left: 0;
   top: 0;
+  z-index: 1;
   overflow: hidden;
 }
 
@@ -100,7 +101,7 @@ body {
 }
 
 .js .tile {
-  visibility: hidden; /* revealed by the slide-up */
+  visibility: hidden;
 }
 
 .tile img {
@@ -110,27 +111,141 @@ body {
   object-fit: cover;
 }
 
-/* Without JS: show the tiles as a simple centred row */
-html:not(.js) .center-row {
+/* Phones: names and strips fade out before the grid appears */
+.is-leaving .side-row,
+.is-leaving .mask {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* ---------- Work grid ---------- */
+
+/* --work-pad / --work-gap are set by home.js so the grid lines up
+   exactly with where the opener images land */
+.work {
+  position: absolute;
+  inset: 0 0 auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: start;
+  column-gap: var(--work-gap, 1.45vw);
+  padding: 0 var(--work-pad, 4.5vw);
+}
+
+.js .work {
+  visibility: hidden;
+}
+
+.col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--work-gap, 1.45vw);
+  will-change: transform;
+}
+
+.work-tile {
+  margin: 0;
+  aspect-ratio: var(--ratio, 326 / 183);
+  overflow: hidden;
+  background: var(--tile-bg, #eee);
+  contain: paint; /* keeps each tile's repaint to itself while columns move */
+}
+
+/* Opener images always keep the landing shape */
+.work-tile[data-anchor] {
+  --ratio: 326 / 183;
+}
+
+.work-tile img,
+.work-tile video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Grid goes live: opener images hand over to their grid copies,
+   everything else eases in */
+.js .work-tile {
+  opacity: 0;
+  translate: 0 12px;
+}
+
+.is-live .work {
+  visibility: visible;
+}
+
+.is-live .mask {
   display: none;
 }
 
-html:not(.js) .mask {
-  position: static;
-  width: 22vw;
-  aspect-ratio: 326 / 183;
+.is-live .work-tile {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 0.7s ease calc(var(--i, 0) * 55ms),
+    translate 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 55ms);
 }
 
+.is-live .work-tile[data-anchor] {
+  transition: none;
+}
+
+/* ---------- Static grid: phones, reduced motion, no JS ---------- */
+
+.is-static,
+html:not(.js) .track {
+  height: auto;
+}
+
+.is-static .scene,
 html:not(.js) .scene {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5vw;
+  position: relative;
+  height: auto;
+  overflow: visible;
 }
 
-/* ---------- After the reveal ---------- */
+.is-static .center-row,
+.is-static .side-row,
+.is-static .mask,
+.is-static .is-clone,
+html:not(.js) .center-row,
+html:not(.js) .side-row,
+html:not(.js) .mask {
+  display: none;
+}
 
-.after {
-  min-height: 100vh;
-  padding: var(--side-pad);
+.is-static .work,
+html:not(.js) .work {
+  position: relative;
+  display: block;
+  column-count: 4;
+  column-gap: 16px;
+  padding: 16px;
+}
+
+.is-static .col,
+html:not(.js) .col {
+  display: contents;
+}
+
+.is-static .work-tile,
+html:not(.js) .work-tile {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 699px) {
+  .is-static .work,
+  html:not(.js) .work {
+    column-count: 2;
+    column-gap: 12px;
+    padding: 12px;
+  }
+
+  .is-static .work-tile,
+  html:not(.js) .work-tile {
+    margin-bottom: 12px;
+  }
 }
