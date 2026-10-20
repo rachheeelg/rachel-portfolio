@@ -17,18 +17,18 @@
   // ---------------- Settings (tweak here) ----------------
   const CONFIG = {
     // Text glitch — same characters and 120ms speed as the Baffle.js CodePen
-    shuffleDuration: 1000,
-    shuffleHold: 200,
+    shuffleDuration: 600,
+    shuffleHold: 100,
     shuffleTick: 120,
     symbols: Array.from("█▓█ ▒░/▒░ █░▒▓/ █▒▒ ▓▒▓/█ ░█▒/ ▒▓░ █<░▒ ▓/░>"),
 
     // Centre → sides hand-off
-    splitDuration: 1000,
+    splitDuration: 700,
     splitEasing: "cubic-bezier(0.76, 0, 0.24, 1)",
 
     // Strip slide-up
-    imageDelays: [0, 150, 300, 450],
-    imageDuration: 850,
+    imageDelays: [0, 80, 160, 240],
+    imageDuration: 600,
     imageEasing: "cubic-bezier(0.22, 1, 0.36, 1)",
 
     // Starting strips (shrink automatically on narrow screens)
@@ -37,8 +37,18 @@
     startGap: 13,
 
     // Scroll-triggered reveal
-    revealDuration: 1600,
-    autoRevealDelay: 600, // pause (ms) after the strips land, then the reveal plays by itself
+    revealDuration: 1100,
+    autoRevealDelay: 200, // pause (ms) after the strips land, then the reveal plays by itself
+
+    // Auto pass: columns glide in opposite directions once, then the page moves on.
+    // The next page is set by window.NEXT_PAGE in the <head> of index.html.
+    passDelay: 700, // wait for the other tiles to ease in before the columns move
+    autoScroll: false, // false = visitor scrolls the columns; true = they glide by themselves
+    passDuration: 8000, // how long the automatic pass takes (ms), only used when autoScroll is true
+    endThreshold: 0.98, // how far through (0–1) the visitor scrolls before the columns part
+    exitFade: 700, // fade to white before going to the next page (ms)
+    partDuration: 900, // columns slide apart to the sides before the next page (ms)
+    partStagger: 90, // inner columns go first, outer ones follow (ms)
     expandEnd: 0.6,
     scatterStart: 0.4,
     sideOffset: 24,
@@ -70,6 +80,7 @@
   const masks = Array.from(scene.querySelectorAll(".mask"))
   const tiles = masks.map((m) => m.querySelector(".tile"))
   const cols = Array.from(document.querySelectorAll("#work .col"))
+  const nextPage = window.NEXT_PAGE || "" // set in the <head> of index.html
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
   const isStaticMode = () => reducedMotion || window.innerWidth < CONFIG.mobileBreakpoint
@@ -287,6 +298,7 @@
       track.classList.add("is-leaving")
       setTimeout(() => {
         progress = 1
+        if (nextPage) return goToNextPage()
         enterStatic()
         phase = "settling"
         scheduleRelease()
@@ -305,9 +317,66 @@
       requestAnimationFrame(tick)
     } else {
       goLive()
-      phase = "settling"
-      scheduleRelease()
+      if (nextPage && CONFIG.autoScroll) {
+        phase = "passing" // scroll stays held for the whole pass
+        setTimeout(runPass, CONFIG.passDelay)
+      } else {
+        phase = "settling"
+        scheduleRelease()
+      }
     }
+  }
+
+  // ---------------- 5. One automatic pass, then the next page ----------------
+  let passing = false
+  function runPass() {
+    passing = true
+    const start = performance.now()
+    const step = (now) => {
+      const t = clamp01((now - start) / CONFIG.passDuration)
+      colCurrent = easeInOutCubic(t)
+      applyColumns(colCurrent)
+      if (t < 1) requestAnimationFrame(step)
+      else goToNextPage()
+    }
+    requestAnimationFrame(step)
+  }
+
+  let leaving = false
+  function goToNextPage() {
+    if (leaving || !nextPage) return
+    leaving = true
+    try {
+      sessionStorage.setItem("introSeen", "1") // don't replay the intro this visit
+    } catch (e) {}
+    // replace() keeps the intro out of the back-button history,
+    // so pressing Back on the next page doesn't replay it and bounce forward again
+    const go = () => window.location.replace(nextPage)
+
+    // Desktop: the columns part like curtains — left half slides left, right half slides right
+    if (live && !staticOn) {
+      const W = scene.clientWidth
+      const half = cols.length / 2
+      cols.forEach((col, i) => {
+        const r = col.getBoundingClientRect()
+        const goLeft = i < half
+        const distance = goLeft ? -(r.right + 40) : W - r.left + 40
+        const fromCentre = goLeft ? half - 1 - i : i - half // 0 = inner column
+        col.animate([{ translate: "0px 0px" }, { translate: `${distance}px 0px` }], {
+          duration: CONFIG.partDuration,
+          delay: fromCentre * CONFIG.partStagger,
+          easing: "cubic-bezier(0.76, 0, 0.24, 1)",
+          fill: "forwards",
+        })
+      })
+      const total = CONFIG.partDuration + (half - 1) * CONFIG.partStagger
+      setTimeout(go, total + 100)
+      return
+    }
+
+    // Phones: simple fade
+    track.classList.add("is-exiting")
+    setTimeout(go, CONFIG.exitFade)
   }
 
   function scheduleRelease() {
@@ -384,9 +453,14 @@
           : Math.max(0, c.base + height - H) // room below
     })
     scrollDistance = Math.max(0, ...colState.map((c) => c.travel))
-    track.style.height = `${H + scrollDistance}px`
-    colTarget = scrollProgress()
-    colCurrent = colTarget
+    if (!nextPage || !CONFIG.autoScroll) {
+      // Scroll mode: the page gets taller so scrolling drives the columns
+      track.style.height = `${H + scrollDistance}px`
+      colTarget = scrollProgress()
+      colCurrent = colTarget
+    } else if (!passing) {
+      colCurrent = 0
+    }
     applyColumns(colCurrent)
   }
 
@@ -405,6 +479,8 @@
     colCurrent = lerp(colCurrent, colTarget, CONFIG.columnSmoothing)
     if (Math.abs(colTarget - colCurrent) < 0.0005) colCurrent = colTarget
     applyColumns(colCurrent)
+    // Scrolled to the end: part the columns and open the main page
+    if (nextPage && colCurrent >= CONFIG.endThreshold) return goToNextPage()
     if (colCurrent !== colTarget) colRaf = requestAnimationFrame(columnLoop)
   }
 
@@ -490,6 +566,7 @@
   window.addEventListener(
     "wheel",
     (e) => {
+      if (leaving) return e.preventDefault() // hold still while the columns part
       if (phase === "done") return
       e.preventDefault()
       if (phase === "settling") return scheduleRelease()
@@ -509,6 +586,7 @@
   window.addEventListener(
     "touchmove",
     (e) => {
+      if (leaving) return e.preventDefault()
       if (phase === "done") return
       e.preventDefault()
       if (phase === "settling" || touchStartY === null) return
@@ -531,6 +609,7 @@
   window.addEventListener(
     "scroll",
     () => {
+      if (leaving) return
       if (phase !== "done" && window.scrollY !== 0) {
         window.scrollTo(0, 0)
         return
@@ -601,6 +680,15 @@
   document.querySelectorAll("img").forEach((img) => (img.decoding = "async"))
   numberTiles()
   layout(progress)
+
+  if (reducedMotion && nextPage) {
+    // No motion: skip the intro entirely
+    try {
+      sessionStorage.setItem("introSeen", "1")
+    } catch (e) {}
+    window.location.replace(nextPage)
+    return
+  }
 
   if (reducedMotion) {
     // No motion: skip the opener, show the grid straight away

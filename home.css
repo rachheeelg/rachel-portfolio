@@ -2,8 +2,8 @@
   --font: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-size: 16px;
   --side-pad: 25px; /* distance of Rachel / Goh from the screen edges */
-  --text: #111;
-  --bg: #fff;
+  --text: #100E0E;
+  --bg: #FEFEFE;
 }
 
 *,
@@ -190,6 +190,15 @@ body {
 
 .is-live .work-tile[data-anchor] {
   transition: none;
+}
+
+/* Fade out before going to the next page */
+.scene {
+  transition: opacity 0.7s ease;
+}
+
+.is-exiting .scene {
+  opacity: 0;
 }
 
 /* ---------- Static grid: phones, reduced motion, no JS ---------- */

@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Rachel Goh</title>
     <meta name="description" content="Rachel Goh — graphic designer working across brand identity, type design, motion and web." />
-    <script>document.documentElement.classList.add("js")</script>
+        <script>
+      // Where the intro goes when it finishes — must be a different page from this one
+      window.NEXT_PAGE = "main/main.html"
+
+      // The intro plays once per visit. Add ?intro to the address to replay it while testing.
+      try {
+        var next = new URL(window.NEXT_PAGE, window.location.href)
+        var samePage = next.pathname === window.location.pathname
+        if (/[?&]intro\b/.test(window.location.search)) sessionStorage.removeItem("introSeen")
+        else if (!samePage && sessionStorage.getItem("introSeen") === "1") window.location.replace(next.href)
+      } catch (e) {}
+
+      document.documentElement.classList.add("js")
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,22 +46,22 @@
         <!-- The 4 opener images. Keep these in the same order as data-anchor 1–4 below. -->
         <div class="mask" aria-hidden="true">
           <div class="tile" style="--tile-bg: #000">
-            <img src="home-assets/everything-typeface.jpg" alt="" />
+            <img src="home-assets-web/everything-typeface.jpg" alt="" />
           </div>
         </div>
         <div class="mask" aria-hidden="true">
           <div class="tile" style="--tile-bg: #2c4a75">
-            <img src="home-assets/island-records.jpg" alt="" />
+            <img src="home-assets-web/island-records.jpg" alt="" />
           </div>
         </div>
         <div class="mask" aria-hidden="true">
           <div class="tile" style="--tile-bg: #e9e9e9">
-            <img src="home-assets/femmenet.jpg" alt="" />
+            <img src="home-assets-web/femmenet.jpg" alt="" />
           </div>
         </div>
         <div class="mask" aria-hidden="true">
           <div class="tile" style="--tile-bg: #000">
-            <img src="home-assets/DFF-Web-Version.png" alt="" />
+            <img src="home-assets-web/dear-future-designer.jpg" alt="" />
           </div>
         </div>
 
@@ -71,75 +84,75 @@
           <div class="col" data-direction="up">
             <!-- --ratio: auto shows the whole piece at its own shape, uncropped -->
             <figure class="work-tile" style="--ratio: auto; --tile-bg: #eef3e3">
-              <img src="home-assets/WHITE LA_071025_Direction 1_Olympic_Poster-02.jpg" alt="LA28 Summer Olympics event schedule poster" loading="lazy" />
+              <img src="home-assets-web/la28-olympic-poster.jpg" alt="LA28 Summer Olympics event schedule poster" loading="lazy" />
             </figure>
             <figure class="work-tile" style="--tile-bg: #fff">
-              <video src="home-assets/TooTime-Motion-Short.mp4" poster="home-assets/TooTime-Intro.png"
+              <video src="home-assets-web/tootime.mp4" poster="home-assets-web/tootime-poster.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Website Dials"></video>
                      </figure>
             <figure class="work-tile" style="--tile-bg: #ddd">
-             <video src="home-assets/Dials-Recording.mp4" poster="home-assets/Dial-A-Ton.png"
+             <video src="home-assets-web/dials-recording.mp4" poster="home-assets-web/dials-poster.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Website Dials"></video>
                      </figure>
             <figure class="work-tile" data-anchor="1" style="--tile-bg: #000">
-              <img src="home-assets/everything-typeface.jpg" alt="This Is A Every Thing Typeface — type specimen" />
+              <img src="home-assets-web/everything-typeface.jpg" alt="This Is A Every Thing Typeface — type specimen" />
             </figure>
           </div>
 
           <div class="col" data-direction="down">
             <figure class="work-tile" style="--tile-bg: #dfe3e8">
-              <video src="home-assets/Werable-FYP.mp4" poster="home-assets/Werable-Singapore-Stories.png"
+              <video src="home-assets-web/werable.mp4" poster="home-assets-web/werable-poster.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Film still: “It’s only in water, I can move freely.”"></video>
             </figure>
             <figure class="work-tile" data-anchor="2" style="--tile-bg: #2c4a75">
-              <video src="home-assets/Motion-Logo-Ident.mp4" poster="home-assets/island-records.jpg"
+              <video src="home-assets-web/island-logo-ident.mp4" poster="home-assets-web/island-records.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Film still:Island Records Logo Ident"></video>
             </figure>
             <figure class="work-tile" style="--tile-bg: #f1c9a5">
-              <video src="home-assets/thesignmator-intro.mp4" poster="home-assets/The Signmator.png"
+              <video src="home-assets-web/signmator-intro.mp4" poster="home-assets-web/signmator-poster.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Film still: “The Signmator — signboard generator website”"></video>
             </figure>
             <figure class="work-tile" style="--tile-bg: #eee">
-              <img src="home-assets/copi-can.png" alt="Copi drink cans packaging" loading="lazy" />
+              <img src="home-assets-web/copi-cans.jpg" alt="Copi drink cans packaging" loading="lazy" />
             </figure>
           </div>
 
           <div class="col" data-direction="up">
             <figure class="work-tile" style="--tile-bg: #000">
-              <img src="home-assets/Core3Studio.jpg" alt="Book spread on immigrants" loading="lazy" />
+              <img src="home-assets-web/core3-studio.jpg" alt="Book spread on immigrants" loading="lazy" />
             </figure>
             <figure class="work-tile" style="--ratio: auto; --tile-bg: #111">
-              <video src="home-assets/SymbosisMoGraph-Short.mp4" poster="home-assets/Symbosis-Poster.png"
+              <video src="home-assets-web/symbosis.mp4" poster="home-assets-web/symbosis-poster.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Glowing neon lettering"></video>
             </figure>
             <figure class="work-tile" style="--tile-bg: #efe6d8">
-              <img src="home-assets/CopiBake-Pop-Up.png" alt="Copi × The Fat Kid Bakery — Copibake launch" loading="lazy" />
+              <img src="home-assets-web/copibake-pop-up.jpg" alt="Copi × The Fat Kid Bakery — Copibake launch" loading="lazy" />
             </figure>
             <figure class="work-tile" data-anchor="3" style="--tile-bg: #e9e9e9">
-              <img src="home-assets/femmenet.jpg" alt="Femme*Net — printed card" />
+              <img src="home-assets-web/femmenet.jpg" alt="Femme*Net — printed card" />
             </figure>
           </div>
 
           <div class="col" data-direction="down">
             <figure class="work-tile" style="--tile-bg: #6b4a2b">
-                <video src="home-assets/Femme*Net-Intro-Title.mp4" poster="home-assets/Femme*Net-Backup.png"
+                <video src="home-assets-web/femmenet-intro.mp4" poster="home-assets-web/femmenet-intro-poster.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Glowing neon lettering"></video>
             </figure>
             <figure class="work-tile" data-anchor="4" style="--tile-bg: #000">
-              <img src="home-assets/DFF-Web-Version.png" alt="Dear Future Designer — book cover" />
+              <img src="home-assets-web/dear-future-designer.jpg" alt="Dear Future Designer — book cover" />
             </figure>
             <figure class="work-tile" style="--tile-bg: #fff">
-              <img src="home-assets/The-Semiotics-of-Tea.jpg" alt="Semiotics of Tea" loading="lazy" />
+              <img src="home-assets-web/semiotics-of-tea.jpg" alt="Semiotics of Tea" loading="lazy" />
             </figure>
             <figure class="work-tile" style="--ratio: 3 / 4; --tile-bg: #111">
-              <video src="home-assets/Translation-Base-Animation.mp4" poster="home-assets/Translation-Base-Animation.png"
+              <video src="home-assets-web/translation-base.mp4" poster="home-assets-web/translation-base-poster.jpg"
                      muted loop playsinline preload="metadata"
                      aria-label="Glowing neon lettering"></video>
             </figure>
