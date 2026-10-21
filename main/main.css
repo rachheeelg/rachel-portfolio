@@ -1,5 +1,131 @@
+:root {
+    --indent: 4ch;      /* nav indentation, 4 monospace characters */
+    --gutter: 12px;     /* page edge spacing */
+}
+
+* { box-sizing: border-box; }
+
 body {
-    background-color:#FEFEFE;
-    font-family: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    margin: 0;
+    padding: var(--gutter);
+    background: #fff;
+    color: #000;
+    font-family: "Geist Mono", monospace;
     font-size: 12px;
+    line-height: 1.35;
+}
+
+p { margin: 0; }
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover { text-decoration: underline; }
+
+/* ---------- Header ---------- */
+.site-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr;   /* intro | nav */
+    align-items: start;
+}
+
+.index {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-top: 0.5rem;              
+    text-transform: uppercase;
+}
+
+.nav-col {
+    display: flex;
+    flex-direction: column;
+}
+
+/* every item in a column is indented... */
+.nav-col > * {
+    padding-left: var(--indent);
+}
+
+/* ...except the heading */
+.nav-col > :first-child {
+    padding-left: 0;
+    font-weight: 700;
+}
+
+/* ---------- Featured project ---------- */
+.feature {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2.5rem;
+    margin-top: 3rem;
+}
+
+.feature-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;            /* text sits at the bottom */
+}
+
+.feature-type { text-transform: uppercase; }
+
+.feature-image {
+    aspect-ratio: 16 / 9;
+    background: #d9d9d9;              /* placeholder grey */
+}
+
+.feature-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ---------- Thumbnail strip ---------- */
+.thumbs {
+    display: flex;
+    gap: 8px;
+    margin-top: 3.5rem;
+    overflow-x: auto;                 /* scrolls sideways if they don't fit */
+}
+
+.thumbs img {
+    height: 140px;                    /* same height, natural widths */
+    width: auto;
+    display: block;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 800px) {
+    .site-header {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
     }
+
+    .intro {
+        max-width: 34ch;          /* wraps after "Singapore," like your mockup */
+    }
+
+    .index {
+        flex-direction: column;   /* stack the four nav sections */
+        gap: 1.5rem;
+        padding-top: 0;
+    }
+
+    .feature {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-top: 10rem;        /* the big space above the image */
+    }
+
+    .feature-info {
+        order: 2;                 /* moves the text below the image */
+        align-items: flex-start;  /* name and type align at the top */
+    }
+
+    .thumbs {
+        display: none;            /* no carousel on mobile */
+    }
+}
